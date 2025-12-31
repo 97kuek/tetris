@@ -1,43 +1,71 @@
-// Super Rotation System (SRS) Kick Table
-// https://tetris.wiki/Super_Rotation_System
+/**
+ * このファイルは、モダンなテトリスで採用されている回転ルール、
+ * 「スーパーローテーションシステム (Super Rotation System, SRS)」の定義を含みます。
+ * SRSは、ミノが壁や床、他のブロックに隣接しているときに、
+ * そのままでは回転できなくても、特定のルールに従ってミノをずらして（"キック"して）
+ * 回転を試みるシステムです。これにより、より直感的で柔軟な操作が可能になります。
+ *
+ * 参考資料: https://tetris.wiki/Super_Rotation_System
+ */
 
-// J, L, S, T, Z pieces share the same kick table
+/**
+ * 回転の状態は、数字で以下のように定義されます。
+ * 0: 初期状態 (北向き)
+ * 1: 右に90度回転した状態 (東向き)
+ * 2: 180度回転した状態 (南向き)
+ * 3: 左に90度回転した状態 (西向き)
+ */
+
+// J, L, S, T, Z ミノに共通のキックテーブル
+// これらのミノは3x3のボックスを基準に回転します。
 const SRS_KICKS_JLSTZ = {
-    // 0 -> 1 (North to East)
-    "0-1": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
-    // 1 -> 0 (East to North)
-    "1-0": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
-    // 1 -> 2 (East to South)
-    "1-2": [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],
-    // 2 -> 1 (South to East)
-    "2-1": [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
-    // 2 -> 3 (South to West)
-    "2-3": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
-    // 3 -> 2 (West to South)
-    "3-2": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
-    // 3 -> 0 (West to North)
-    "3-0": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
-    // 0 -> 3 (North to West)
-    "0-3": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]]
+    // キー "0-1" は、状態0(北)から状態1(東)への回転を意味します。
+    // 値は、[xオフセット, yオフセット] の配列です。
+    // テストは順番に行われます。
+    // 1. [0, 0]: まず、その場で回転を試みる (キックなし)。
+    // 2. [-1, 0]: 失敗した場合、左に1マスずらして試みる。
+    // 3. [-1, -1]: 失敗した場合、左に1、上に1マスずらして試みる。(※注)
+    // 4. [0, 2]: 失敗した場合、下に2マスずらして試みる。(※注)
+    // 5. [-1, 2]: 失敗した場合、左に1、下に2マスずらして試みる。(※注)
+    //
+    // (※注) SRSのY座標系は上が正ですが、CanvasのY座標系は下が正です。
+    // このデータを使用する側(game.js)で、Yオフセットの符号を反転させる必要があります。
+    // 例: yオフセットが-1なら、Canvasではy座標を+1する動きになります。
+
+    "0-1": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]], // 北 -> 東
+    "1-0": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],   // 東 -> 北
+    "1-2": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],   // 東 -> 南
+    "2-1": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]], // 南 -> 東
+    "2-3": [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],   // 南 -> 西
+    "3-2": [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]], // 西 -> 南
+    "3-0": [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]], // 西 -> 北
+    "0-3": [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]]    // 北 -> 西
 };
 
-// I piece has its own kick table
+// I ミノ専用のキックテーブル
+// I ミノは形状が特殊なため、他のミノとは異なるキックデータを持っています。
 const SRS_KICKS_I = {
-    "0-1": [[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]],
-    "1-0": [[0, 0], [2, 0], [-1, 0], [2, 1], [-1, -2]],
-    "1-2": [[0, 0], [-1, 0], [2, 0], [-1, 2], [2, -1]],
-    "2-1": [[0, 0], [1, 0], [-2, 0], [1, -2], [-2, 1]],
-    "2-3": [[0, 0], [2, 0], [-1, 0], [2, 1], [-1, -2]],
-    "3-2": [[0, 0], [-2, 0], [1, 0], [-2, -1], [1, 2]],
-    "3-0": [[0, 0], [1, 0], [-2, 0], [1, -2], [-2, 1]],
-    "0-3": [[0, 0], [-1, 0], [2, 0], [-1, 2], [2, -1]]
+    "0-1": [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],  // 北 -> 東 (Y座標反転前の値)
+    "1-0": [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],  // 東 -> 北
+    "1-2": [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],  // 東 -> 南
+    "2-1": [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],  // 南 -> 東
+    "2-3": [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],  // 南 -> 西
+    "3-2": [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],  // 西 -> 南
+    "3-0": [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],  // 西 -> 北
+    "0-3": [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]]   // 北 -> 西
 };
 
-// O piece doesn't kick (it doesn't rotate effectively in a way that needs kicks usually, or fits in 2x2 centre)
-// But standard SRS treats O as not needing kicks.
-
+/**
+ * 指定されたミノの種類と回転情報に基づいて、適用すべきSRSキックオフセットのリストを返します。
+ * @param {string} pieceType - ミノの種類 ('I', 'J', 'T'など)。
+ * @param {number} currentRotation - 現在の回転状態 (0-3)。
+ * @param {number} newRotation - 新しい回転状態 (0-3)。
+ * @returns {number[][]} - 試行すべきオフセット [dx, dy] の配列。
+ */
 function getSRSOffsets(pieceType, currentRotation, newRotation) {
-    if (pieceType === 'O') return [[0, 0]]; // No kicks needed
+    if (pieceType === 'O') {
+        return [[0, 0]]; // Oミノはキックなし
+    }
 
     const key = `${currentRotation}-${newRotation}`;
     if (pieceType === 'I') {
@@ -47,25 +75,32 @@ function getSRSOffsets(pieceType, currentRotation, newRotation) {
     }
 }
 
-// Utility to rotate matrix
+/**
+ * 2次元配列（行列）を時計回りに90度回転させるユーティリティ関数。
+ * @param {number[][]} matrix - 回転させたいミノの形状を表す行列。
+ * @param {number} [dir=1] - 回転方向 (1: 時計回り, -1: 反時計回り)。現在は1のみを想定。
+ * @returns {number[][]} - 回転後の新しい行列。
+ */
 function rotateMatrix(matrix, dir = 1) {
-    // 1 = Clockwise, -1 = Counter-Clockwise
-    // Transpose
-    const N = matrix.length;
-    let newMatrix = matrix.map((row, i) =>
-        row.map((val, j) => matrix[j][i])
+    // 行列を時計回りに90度回転させるアルゴリズムは、2つのステップで実現できます。
+    // 1. 転置 (Transpose): 行と列を入れ替える。
+    //    例: [[1, 2],      -> [[1, 3],
+    //         [3, 4]]         [2, 4]]
+    // 2. 各行を反転 (Reverse rows): 転置した行列の各行の要素の順序を逆にする。
+    //    例: [[1, 3],      -> [[3, 1],
+    //         [2, 4]]         [4, 2]]
+
+    // ステップ1: 転置
+    const newMatrix = matrix.map((_, colIndex) =>
+        matrix.map(row => row[colIndex])
     );
 
-    // If Clockwise: Reverse rows
+    // ステップ2: 時計回りなら各行を反転
     if (dir === 1) {
         newMatrix.forEach(row => row.reverse());
-    } else {
-        // If Counter-Clockwise: Reverse columns (which is reversing the array of rows after transpose? No.)
-        // Transpose then Reverse rows = Clockwise
-        // Reverse rows then Transpose = Counter Clockwise
-        // Let's stick to Clockwise only for this simple implementation as requested? 
-        // User asked for "Improved Gameplay" so usually both rotations are nice, but let's stick to Right rotate for simplicity unless requested.
-        // Actually, let's keep it simple: Standard Rotate is Clockwise.
     }
+    // 反時計回りの場合 (dir === -1) は、転置の前に各行を反転させると実現できますが、
+    // このゲームでは時計回りの回転のみを実装しています。
+
     return newMatrix;
 }

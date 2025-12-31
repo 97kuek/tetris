@@ -1,33 +1,35 @@
-const COLS = 10;
-const ROWS = 20;
-const BLOCK_SIZE = 30;
+// ゲーム全体で使用される定数を管理する
 
-// Standard Tetris Colors
+const COLS = 10; // 盤面の列数
+const ROWS = 20; // 盤面の行数
+const BLOCK_SIZE = 30; // 1ブロックのサイズ(ピクセル単位)
+
+// テトリミノの色を定義する配列。
+// インデックスがミノの色IDに対応します（pieces.jsのcolorIdと連携）。
+// COLORS[0] は null で、空のセルを表します。
 const COLORS = [
-    null,
-    '#00f0f0', // I - Cyan
-    '#0000f0', // J - Blue
-    '#f0a000', // L - Orange
-    '#f0f000', // O - Yellow
-    '#00f000', // S - Green
-    '#a000f0', // T - Purple
-    '#f00000', // Z - Red
+    null,      // 0: 空のセル
+    '#00f0f0', // 1: Iミノ (シアン)
+    '#0000f0', // 2: Jミノ (ブルー)
+    '#f0a000', // 3: Lミノ (オレンジ)
+    '#f0f000', // 4: Oミノ (イエロー)
+    '#00f000', // 5: Sミノ (グリーン)
+    '#a000f0', // 6: Tミノ (パープル)
+    '#f00000'  // 7: Zミノ (レッド)
 ];
 
-// Speed Curve (Frames per grid cell drop approx converted to ms)
-// Using a smoother curve suitable for beginners to intermediate
+/**
+ * ゲームのレベルに応じてミノの落下速度（インターバル）を返します。
+ * @param {number} level - 現在のゲームレベル。
+ * @returns {number} - 落下インターバル（ミリ秒）。数値が小さいほど速い。
+ */
 function getDropInterval(level) {
-    // Level 1: 1000ms (1 sec) - Easy
-    // Level 5: 500ms - Moderate
-    // Level 10: 150ms - Fast
-    // Level 15: 50ms - Pro
+    // レベルが20を超えた場合は、最高速度（20ms）を維持します。
+    if (level > 20) return 20;
 
-    if (level > 20) return 20; // Cap at 20ms
-
-    // Equation: (0.8-((level-1)*0.007))^(level-1) logic is complex.
-    // Let's use a lookup table for the first 20 levels for precision.
+    // レベルごとの落下速度を配列で定義(簡易的)
     const speeds = [
-        1000, // L1
+        1000, // L1: 1秒
         900,  // L2
         800,  // L3
         720,  // L4
@@ -49,7 +51,7 @@ function getDropInterval(level) {
         40    // L20
     ];
 
-    return speeds[level - 1] || 20;
+    return speeds[level - 1] || 20; // レベルに対応する落下速度を返すまたは、最高速度を返す
 }
 
-const LOCK_DELAY = 500; // ms
+const LOCK_DELAY = 500; // ミノが地面や他のブロックに着地してから固定されるまでの猶予時間

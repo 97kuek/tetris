@@ -1,68 +1,117 @@
+/*
+  このファイルは、Neon Tetrisの外観を定義するスタイルシートです。
+  色、フォント、レイアウト、アニメーションなど、ページの視覚的な要素すべてを管理します。
+*/
+
+/*
+  :rootセレクタは、ドキュメントのルート要素（HTMLでは<html>要素）を選択します。
+  ここにCSSカスタムプロパティ（通称：CSS変数）を定義することで、
+  スタイルシート全体で一貫した値を再利用でき、色の変更などが容易になります。
+*/
 :root {
     --bg-color: #0d0f1a;
+    /* 背景色 */
     --text-color: #e0e6ed;
+    /* 基本テキスト色 */
     --primary-glow: #00f3ff;
+    /* プライマリの輝き（ネオン）色 - シアン系 */
     --secondary-glow: #bc13fe;
+    /* セカンダリの輝き色 - パープル系 */
     --glass-bg: rgba(255, 255, 255, 0.05);
+    /* グラスモーフィズム効果の背景色 */
     --glass-border: rgba(255, 255, 255, 0.1);
+    /* グラスモーフィズム効果の境界線色 */
     --panel-padding: 20px;
+    /* パネルの内側余白 */
     --font-main: 'Outfit', sans-serif;
+    /* メインフォント */
 }
 
-/* Base Clean Reset */
+/*
+  基本的なリセット設定です。
+  *（ユニバーサルセレクタ）はすべての要素を選択します。
+  デフォルトでブラウザが適用するマージンやパディングをリセットし、
+  box-sizingをborder-boxにすることで、paddingやborderを含んだサイズ計算を容易にします。
+  これにより、意図しないレイアウトの崩れを防ぎます。
+*/
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+/* body要素の基本スタイルを設定します。 */
 body {
     background-color: var(--bg-color);
+    /* 背景色を設定 */
+    /* 背景に放射状のグラデーションを追加して、宇宙のような雰囲気を出します。 */
     background-image:
         radial-gradient(circle at 10% 20%, rgba(90, 24, 154, 0.2) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.15) 0%, transparent 20%);
     color: var(--text-color);
+    /* テキスト色を設定 */
     font-family: var(--font-main);
+    /* フォントを設定 */
     height: 100vh;
+    /* 高さを画面の100%に設定 */
     display: flex;
+    /* Flexboxレイアウトを有効化 */
     justify-content: center;
+    /* 水平方向中央揃え */
     align-items: center;
+    /* 垂直方向中央揃え */
     overflow: hidden;
+    /* はみ出したコンテンツを非表示にし、スクロールバーが出ないようにする */
 }
 
+/* アプリケーション全体のコンテナのスタイル */
 .app-container {
     width: 100%;
     max-width: 900px;
+    /* 最大幅を設定 */
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+/* ゲームラッパー（ゲーム盤とサイドバーを囲む）のスタイル */
 .game-wrapper {
     display: flex;
     gap: 20px;
+    /* 要素間の間隔 */
     align-items: flex-start;
+    /* 上端揃え */
     padding: 20px;
 }
 
-/* Glassmorphism Panels */
+/*
+  グラスモーフィズム効果を持つパネルの共通スタイル
+  背景を半透明にし、背景ブラーをかけることで、すりガラスのような質感を表現します。
+*/
 .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
+    /* 背景をぼかす */
     -webkit-backdrop-filter: blur(10px);
+    /* Safari用のベンダープレフィックス */
     border: 1px solid var(--glass-border);
     border-radius: 16px;
+    /* 角を丸める */
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    /* 影を追加 */
 }
 
+/* サイドバーのスタイル */
 .sidebar {
     display: flex;
     flex-direction: column;
+    /* 子要素を縦に並べる */
     gap: 20px;
     width: 180px;
 }
 
+/* パネル（HOLD, SCOREなど）の共通スタイル */
 .panel {
     padding: var(--panel-padding);
     text-align: center;
@@ -72,14 +121,18 @@ body {
     justify-content: center;
 }
 
+/* パネル内の<h3>見出しのスタイル */
 .panel h3 {
     margin-bottom: 10px;
     font-weight: 500;
     font-size: 0.9rem;
     letter-spacing: 1.5px;
+    /* 文字間隔 */
     color: rgba(255, 255, 255, 0.6);
+    /* 少し透明な白 */
 }
 
+/* スコア、レベル、ライン数などの表示部分のスタイル */
 #score,
 #level,
 #lines,
@@ -88,10 +141,13 @@ body {
     font-weight: 700;
     margin-bottom: 15px;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    /* テキストに影をつけて光っているように見せる */
 }
 
+/* 操作方法リストのスタイル */
 .controls-list {
     list-style: none;
+    /* リストの黒点を消す */
     text-align: left;
     width: 100%;
     font-size: 0.85rem;
@@ -101,67 +157,88 @@ body {
     margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
+    /* 양쪽 끝에 배치 */
     color: rgba(255, 255, 255, 0.7);
 }
 
 .controls-list span {
     font-weight: 700;
     color: var(--primary-glow);
+    /* キーの部分をネオンカラーに */
 }
 
-/* Game Container */
+/* ゲームコンテナ（ゲーム盤）のスタイル */
 .game-container {
     position: relative;
+    /* オーバーレイを重ねるための基準位置 */
     padding: 2px;
-    /* Slight padding for border effect */
+    /* 影を使って、ネオンの枠線のように見せる */
     box-shadow:
         0 0 20px rgba(0, 243, 255, 0.1),
         inset 0 0 20px rgba(0, 243, 255, 0.05);
+    /* 内側に影 */
 }
 
+/* canvas要素の共通スタイル */
 canvas {
     display: block;
+    /* canvasの下にできる余分な隙間をなくす */
 }
 
+/* ゲーム盤のcanvasのスタイル */
 #game-canvas {
     background: rgba(0, 0, 0, 0.3);
+    /* 少し透明な黒 */
     border-radius: 14px;
 }
 
-/* Overlays */
+/* オーバーレイ（スタート、ポーズ、ゲームオーバー画面）のスタイル */
 .overlay {
     position: absolute;
+    /* 親要素(.game-container)を基準に絶対配置 */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(13, 15, 26, 0.85);
+    /* 半透明の背景 */
     backdrop-filter: blur(5px);
+    /* 背景をぼかす */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 10;
+    /* 他の要素より手前に表示 */
     border-radius: 16px;
     transition: opacity 0.3s ease;
+    /* 透明度が変わる際にアニメーション */
 }
 
+/* 非表示状態のオーバーレイ */
 .hidden {
     opacity: 0;
+    /* 透明にする */
     pointer-events: none;
+    /* クリックなどのイベントを受け付けなくする */
 }
 
+/* メインタイトル(h1)のスタイル */
 h1 {
     font-size: 3rem;
     margin-bottom: 30px;
+    /* テキストをグラデーションにするテクニック */
     background: linear-gradient(to right, var(--primary-glow), var(--secondary-glow));
     -webkit-background-clip: text;
+    /* 背景をテキストの形で切り抜く */
     background-clip: text;
     color: transparent;
+    /* テキスト自体は透明にする */
     text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
     letter-spacing: 2px;
 }
 
+/* h2見出し（PAUSEDなど）のスタイル */
 h2 {
     font-size: 2.5rem;
     margin-bottom: 20px;
@@ -169,42 +246,58 @@ h2 {
     text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
 }
 
-/* Buttons */
+/* ボタンのスタイル */
 .glow-btn {
     padding: 12px 30px;
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--bg-color);
     background: linear-gradient(135deg, var(--primary-glow), #4da6ff);
+    /* グラデーション背景 */
     border: none;
     border-radius: 50px;
+    /* 角を丸めてカプセル型に */
     cursor: pointer;
+    /* カーソルをポインターに */
     transition: all 0.3s ease;
+    /* すべてのプロパティ変更をアニメーション */
     text-transform: uppercase;
+    /* 文字を大文字に */
     letter-spacing: 1px;
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+    /* ネオンの輝きを表現 */
     font-family: var(--font-main);
 }
 
 .glow-btn:hover {
     transform: translateY(-2px);
+    /* ホバー時に少し上に動かす */
     box-shadow: 0 0 25px rgba(0, 243, 255, 0.8);
+    /* 輝きを強くする */
 }
 
 .glow-btn:active {
     transform: translateY(1px);
+    /* クリック時に少し下に動かす */
 }
 
+/* 操作方法のヒントのスタイル */
 .controls-hint {
     margin-top: 20px;
     font-size: 0.9rem;
     opacity: 0.7;
+    /* 少し透明にする */
 }
 
-/* Mobile Responsiveness */
+/*
+  レスポンシブデザインの設定
+  @mediaクエリは、特定の条件下でのみスタイルを適用します。
+  ここでは、画面幅が800px以下の場合にレイアウトを変更します。
+*/
 @media (max-width: 800px) {
     .game-wrapper {
         flex-direction: column;
+        /* 縦並びに変更 */
         align-items: center;
         gap: 10px;
     }
@@ -212,12 +305,13 @@ h2 {
     .sidebar {
         width: 100%;
         flex-direction: row;
+        /* 横並びに変更 */
         justify-content: center;
     }
 
+    /* 右サイドバーはモバイルでは非表示にする */
     .sidebar.right {
         display: none;
-        /* Simplify for mobile for now or rearrange */
     }
 
     .panel {
@@ -226,6 +320,8 @@ h2 {
 
     #game-canvas {
         max-height: 70vh;
+        /* 高さを画面の70%までに制限 */
         width: auto;
+        /* 幅を自動調整 */
     }
 }

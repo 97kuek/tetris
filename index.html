@@ -1,25 +1,55 @@
+<!--
+  このファイルはテトリスゲームの骨格となるHTMLドキュメントです。
+  Webページの構造を定義し、必要なCSSファイルやJavaScriptファイルを読み込みます。
+-->
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja"> <!-- lang="ja" はこのページの主要言語が日本語を示す属性 -->
 
 <head>
+    <!-- <head>タグ内には、ページのメタ情報や外部ファイル（CSS、フォントなど）のリンクを記述します。 -->
+
+    <!-- 文字コードをUTF-8に設定します。これにより、日本語などの多言語が正しく表示されます。 -->
     <meta charset="UTF-8">
+
+    <!--
+      ビューポートの設定です。
+      width=device-widthは、ページの幅をデバイスの画面幅に合わせることを意味します。
+      initial-scale=1.0は、初期ズームレベルを1.0に設定します。
+      これにより、スマートフォンやタブレットでも適切に表示されます。
+    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ブラウザのタブに表示されるページのタイトルです。 -->
     <title>Neon Tetris</title>
+
+    <!-- Google Fontsからフォントを読み込むための設定です。パフォーマンス向上のためにpreconnectを使用しています。 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- 'Outfit'というフォントの太さ300, 500, 700を読み込みます。 -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <!-- このページのスタイルを定義するCSSファイルを読み込みます。 -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <!-- <body>タグ内には、実際にブラウザに表示されるコンテンツを記述します。 -->
+
+    <!-- アプリケーション全体を囲むコンテナです。 -->
     <div class="app-container">
+        <!-- ゲーム画面全体（サイドバー含む）を囲むラッパーです。 -->
         <div class="game-wrapper">
-            <!-- Sidebar Left -->
+
+            <!-- 左サイドバー -->
             <div class="sidebar left">
+                <!-- ホールド中のミノを表示するパネルです。 -->
                 <div class="panel hold-panel glass-panel">
                     <h3>HOLD</h3>
+                    <!-- ホールドミノを描画するためのcanvas要素。JavaScriptで操作します。 -->
                     <canvas id="hold-canvas" width="100" height="100"></canvas>
                 </div>
+                <!-- スコア関連情報を表示するパネルです。 -->
                 <div class="panel score-panel glass-panel">
                     <h3>HIGH SCORE</h3>
                     <div id="high-score">0</div>
@@ -32,20 +62,25 @@
                 </div>
             </div>
 
-            <!-- Main Game Area -->
+            <!-- メインのゲームエリア -->
             <div class="game-container glass-panel">
+                <!-- ゲームボードを描画するためのcanvas要素。JavaScriptでテトリミノや盤面を描きます。 -->
                 <canvas id="game-canvas" width="300" height="600"></canvas>
 
-                <!-- Overlays -->
+                <!-- ゲームの状態に応じて表示されるオーバーレイ（重ねて表示される画面） -->
+
+                <!-- スタート画面 -->
                 <div id="start-overlay" class="overlay">
                     <h1>NEON TETRIS</h1>
                     <button id="start-btn" class="glow-btn">START GAME</button>
                     <p class="controls-hint">Arrow Keys to Move/Rotate</p>
                 </div>
+                <!-- ポーズ画面 -->
                 <div id="pause-overlay" class="overlay hidden">
                     <h2>PAUSED</h2>
                     <button id="resume-btn" class="glow-btn">RESUME</button>
                 </div>
+                <!-- ゲームオーバー画面 -->
                 <div id="game-over-overlay" class="overlay hidden">
                     <h2>GAME OVER</h2>
                     <p>Final Score: <span id="final-score">0</span></p>
@@ -53,12 +88,15 @@
                 </div>
             </div>
 
-            <!-- Sidebar Right -->
+            <!-- 右サイドバー -->
             <div class="sidebar right">
+                <!-- 次に出現するミノを表示するパネルです。 -->
                 <div class="panel next-panel glass-panel">
                     <h3>NEXT</h3>
+                    <!-- NEXTミノを描画するためのcanvas要素。 -->
                     <canvas id="next-canvas" width="100" height="180"></canvas>
                 </div>
+                <!-- 操作方法を表示するパネルです。 -->
                 <div class="panel controls-panel glass-panel">
                     <h3>CONTROLS</h3>
                     <ul class="controls-list">
@@ -73,14 +111,23 @@
             </div>
         </div>
     </div>
-    <script src="js/constants.js"></script>
-    <script src="js/sound.js"></script>
 
-    <script src="js/board.js"></script>
-    <script src="js/pieces.js"></script>
-    <script src="js/srs.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/main.js"></script>
+    <!--
+      JavaScriptファイルを読み込みます。
+      <script>タグは<body>の最後に置くのが一般的です。
+      これにより、HTMLの解析が完了してからJavaScriptが実行されるため、
+      ページの表示速度が向上し、JavaScriptがHTML要素を確実に取得できるようになります。
+      読み込む順番も重要で、依存関係があるファイルは先に読み込む必要があります。
+      (例: game.jsはconstants.jsに依存しているので、constants.jsを先に読み込む)
+    -->
+    <script src="js/constants.js"></script> <!-- ゲーム全体で使われる定数を定義 -->
+    <script src="js/sound.js"></script> <!-- 効果音の再生に関する処理 -->
+
+    <script src="js/board.js"></script> <!-- ゲームボード（盤面）に関する処理 -->
+    <script src="js/pieces.js"></script> <!-- テトリミノ（ブロック）に関する定義 -->
+    <script src="js/srs.js"></script> <!-- スーパーローテーションシステム（特殊な回転法則）の定義 -->
+    <script src="js/game.js"></script> <!-- ゲームのメインロジック -->
+    <script src="js/main.js"></script> <!-- 全体の初期化とイベントハンドリング -->
 </body>
 
 </html>
